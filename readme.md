@@ -19,3 +19,5 @@ You will be presented with a prompt where you can enter and execute Haxe code li
 ## Limitations
 
 Only "body code" is allowed, which means you can't define types (e.g. `class`, `enum`...).
+
+However you can `import` and `using` types!

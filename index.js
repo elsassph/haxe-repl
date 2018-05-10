@@ -82,7 +82,6 @@ function hxEval() {
             + wrap.join(
                 lines.join(`\n${LINE}\n`)
             );
-        // console.log('------ Repl.hx\n', src, '\n------');
         fs.writeFileSync(tmpClass, src);
 
         // compile entire code
@@ -90,7 +89,7 @@ function hxEval() {
             '-D', 'js-classic',
             '--no-inline',
             '--no-opt',
-            // '-dce', 'no',
+            '-dce', 'no',
             '-cp', tmpDir.name,
             '-js', tmpOutput,
             'Repl');
@@ -105,7 +104,6 @@ function hxEval() {
                 const js = output.split('"<LINE>";\n');
                 let result = null;
                 const src = js[0] + js.pop() + 'undefined;\n' + (lastOp == 2 ? js.pop() : '');
-                // console.log('------ vm.js\n', src, '\n------');
 
                 // evaluate
                 try {
