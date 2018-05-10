@@ -1,6 +1,6 @@
 {
   "name": "haxe-repl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -10,7 +10,6 @@
   "author": "Philippe Elsass",
   "license": "ISC",
   "dependencies": {
-    "haxe": "^5.0.6",
     "tmp": "0.0.33"
   }
 }

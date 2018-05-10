@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const vm = require('vm');
 const tmp = require('tmp');
-const { haxe } = require('haxe');
+const exec = require('child_process').exec;
 
 const tmpDir = tmp.dirSync();
 const tmpClass = path.join(tmpDir.name, 'Repl.hx');
@@ -29,7 +29,7 @@ ${LINE}
 }`.split('<TOKEN>');
 
 function printCompilerError(stderr) {
-    const err = ('' + stderr.read()).split('\n');
+    const err = (stderr || '').split('\n');
     err.forEach(line => {
         const m = reErr.exec(line);
         if (m) {
@@ -85,44 +85,18 @@ function hxEval() {
         fs.writeFileSync(tmpClass, src);
 
         // compile entire code
-        const ps = haxe(
+        const args = [
             '-D', 'js-classic',
             '--no-inline',
             '--no-opt',
             '-dce', 'no',
             '-cp', tmpDir.name,
             '-js', tmpOutput,
-            'Repl');
+            'Repl'
+        ];
 
-        ps.on('exit', (code, signal) => {
-            // success
-            if (code == 0) {
-                printCompilerError(ps.stderr);
-
-                // extract only new instructions and generate an incremental JS source
-                const output = fs.readFileSync(tmpOutput).toString();
-                const js = output.split('"<LINE>";\n');
-                let result = null;
-                const src = js[0] + js.pop() + 'undefined;\n' + (lastOp == 2 ? js.pop() : '');
-
-                // evaluate
-                try {
-                    const result = vm.runInThisContext(src);
-                    callback(null, result);
-                    if (autoPop) {
-                        buffer.pop();
-                    }
-                } catch (err) {
-                    // runtime error: drop last Haxe instruction
-                    if (lastOp == 1) {
-                        imports.pop();
-                    } else {
-                        buffer.pop();
-                    }
-                    console.log('Eval:', err.message);
-                    callback();
-                }
-            } else {
+        exec(`haxe ${args.join(' ')}`, (err, stdout, stderr) => {
+            if (err) {
                 // compiler error: drop last Haxe instruction
                 if (lastOp == 1) {
                     imports.pop();
@@ -130,8 +104,35 @@ function hxEval() {
                     buffer.pop();
                 }
 
-                printCompilerError(ps.stderr);
-                callback(null);
+                printCompilerError(stderr);
+                return callback(null);
+            }
+
+            // warnings
+            printCompilerError(stderr);
+
+            // extract only new instructions and generate an incremental JS source
+            const output = fs.readFileSync(tmpOutput).toString();
+            const js = output.split('"<LINE>";\n');
+            let result = null;
+            const src = js[0] + js.pop() + 'undefined;\n' + (lastOp == 2 ? js.pop() : '');
+
+            // evaluate
+            try {
+                const result = vm.runInThisContext(src);
+                callback(null, result);
+                if (autoPop) {
+                    buffer.pop();
+                }
+            } catch (err) {
+                // runtime error: drop last Haxe instruction
+                if (lastOp == 1) {
+                    imports.pop();
+                } else {
+                    buffer.pop();
+                }
+                console.log('Eval:', err.message);
+                callback();
             }
         });
     }
