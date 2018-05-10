@@ -1,13 +1,13 @@
 {
-  "name": "hx-node",
-  "version": "1.0.0",
+  "name": "haxe-repl",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "bin": {
     "haxe-repl": "./bin/cli.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Philippe Elsass",
   "license": "ISC",
   "dependencies": {
     "haxe": "^5.0.6",

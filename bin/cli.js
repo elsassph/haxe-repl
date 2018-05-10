@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+"use strict";
+
 const repl = require('repl');
 const hxEval = require('../index')();
 
