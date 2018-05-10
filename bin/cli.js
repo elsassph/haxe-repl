@@ -2,7 +2,6 @@
 "use strict";
 
 const repl = require('repl');
-const hxEval = require('../index')();
 const exec = require('child_process').exec;
 
 exec(`haxe -version`, (err, stdout, stderr) => {
@@ -12,5 +11,7 @@ exec(`haxe -version`, (err, stdout, stderr) => {
     }
     console.log('REPL Haxe', stderr);
 
+    const extraArgs = process.argv.slice(2);
+    const hxEval = require('../index')(extraArgs);
     repl.start({ prompt: '> ', eval: hxEval });
 });

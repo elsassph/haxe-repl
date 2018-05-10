@@ -6,9 +6,6 @@ const vm = require('vm');
 const tmp = require('tmp');
 const exec = require('child_process').exec;
 
-const tmpDir = tmp.dirSync();
-const tmpClass = path.join(tmpDir.name, 'Repl.hx');
-const tmpOutput = path.join(tmpDir.name, 'out.js');
 const reErr = /\/Repl.hx:([0-9]+): (.*)/;
 const reImport = /^(import|using)\s/;
 const reIdent = /^[a-z0-9_]+$/;
@@ -40,9 +37,24 @@ function printCompilerError(stderr) {
     });
 }
 
-function hxEval() {
+function hxEval(extraArgs) {
     const imports = [];
     const buffer = [];
+
+    const tmpDir = tmp.dirSync();
+    const tmpClass = path.join(tmpDir.name, 'Repl.hx');
+    const tmpOutput = path.join(tmpDir.name, 'out.js');
+
+    const args = (extraArgs || []).concat([
+        '-D', 'js-classic',
+        '--no-inline',
+        '--no-opt',
+        '-dce', 'no',
+        '-cp', tmpDir.name,
+        '-js', tmpOutput,
+        'Repl'
+    ]).join(' ');
+
     return (cmd, context, filename, callback) => {
         // pre-process input
         if (cmd === undefined) return callback();
@@ -85,17 +97,7 @@ function hxEval() {
         fs.writeFileSync(tmpClass, src);
 
         // compile entire code
-        const args = [
-            '-D', 'js-classic',
-            '--no-inline',
-            '--no-opt',
-            '-dce', 'no',
-            '-cp', tmpDir.name,
-            '-js', tmpOutput,
-            'Repl'
-        ];
-
-        exec(`haxe ${args.join(' ')}`, (err, stdout, stderr) => {
+        exec(`haxe ${args}`, (err, stdout, stderr) => {
             if (err) {
                 // compiler error: drop last Haxe instruction
                 if (lastOp == 1) {

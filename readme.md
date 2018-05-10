@@ -9,15 +9,32 @@ the JavaScript target, and incrementally executing it.
 
 ![Haxe REPL](haxe-repl.png)
 
-## Usage
+## Installation
+
+Install globally:
 
     npm install haxe-repl -g
     haxe-repl
 
-You will be presented with a prompt where you can enter and execute Haxe code line by line.
+Or run without installation using `npx`:
+
+    npx haxe-repl
+
+## Usage
+
+    # defaults with current folder as classpath
+    haxe-repl
+
+    # add extra compiler arguments directly
+    haxe-repl -cp src -D my_define
+
+The Haxe version will be printed, and you will be presented with a prompt
+where you can enter and execute Haxe code line by line.
 
 ## Limitations
 
-Only "body code" is allowed, which means you can't define types (e.g. `class`, `enum`...).
+Only "body code" is allowed, which means:
+- you can define variables and functions,
+- you can NOT define types (e.g. `class`, `enum`...).
 
-However you can `import` and `using` types!
+However you can `import` and `using` types, and evalute types using `$type(v)`.
