@@ -107,7 +107,7 @@ function hxEval(extraArgs) {
                 }
 
                 printCompilerError(stderr);
-                return callback(null);
+                return callback();
             }
 
             // warnings
