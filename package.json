@@ -1,0 +1,16 @@
+{
+  "name": "hx-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "haxe-repl": "./bin/cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "haxe": "^5.0.6",
+    "tmp": "0.0.33"
+  }
+}
