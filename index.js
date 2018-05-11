@@ -32,9 +32,10 @@ function printCompilerError(stderr) {
         const m = reErr.exec(line);
         if (m) {
             const desc = m[2];
-            if (desc.indexOf(WARNING) >= 0) console.log('Haxe:', desc.split(WARNING)[1]);
-            else console.log('Haxe:', desc);
+            if (desc.indexOf(WARNING) >= 0) console.log('Repl:', desc.split(WARNING)[1]);
+            else console.log('Repl:', desc);
         }
+        else if (line !== '') console.log(line);
     });
 }
 
