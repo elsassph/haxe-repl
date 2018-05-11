@@ -3,6 +3,7 @@
 
 const repl = require('repl');
 const exec = require('child_process').exec;
+const haxeRepl = require('../index');
 
 exec(`haxe -version`, (err, stdout, stderr) => {
     if (err) {
@@ -12,6 +13,10 @@ exec(`haxe -version`, (err, stdout, stderr) => {
     console.log('REPL Haxe', stderr);
 
     const extraArgs = process.argv.slice(2);
-    const hxEval = require('../index')(extraArgs);
-    repl.start({ prompt: '> ', eval: hxEval });
+    const compile = haxeRepl(extraArgs);
+    repl.start({
+        prompt: '> ',
+        eval: compile,
+        ignoreUndefined: true
+    });
 });
